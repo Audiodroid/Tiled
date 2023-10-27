@@ -1,108 +1,70 @@
-import pygame, sys
+import pygame
 from pytmx.util_pygame import load_pygame
+import tools
+
 
 class Tile(pygame.sprite.Sprite):
-	def __init__(self,pos,surf,groups):
-		super().__init__(groups)
-		self.image = surf
-		self.rect = self.image.get_rect(topleft = pos)
-
-pygame.init()
-screen = pygame.display.set_mode((1280,720))
-tmx_data = load_pygame('../data/tmx/basic.tmx')
-sprite_group = pygame.sprite.Group()
-
-# cycle through all layers
-for layer in tmx_data.visible_layers:
-	# if layer.name in ('Floor', 'Plants and rocks', 'Pipes')
-	if hasattr(layer,'data'):
-		for x,y,surf in layer.tiles():
-			pos = (x * 128, y * 128)
-			Tile(pos = pos, surf = surf, groups = sprite_group)
-
-for obj in tmx_data.objects:
-	pos = obj.x,obj.y
-	if obj.type in ('Building', 'Vegetation'):
-		Tile(pos = pos, surf = obj.image, groups = sprite_group)
+    def __init__(self, pos, surf, groups):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_rect(topleft=pos)
 
 
+def update(screen, surface, sprite_group, mover):
+    sprite_group.draw(surface)
+    screen.fill('black')
+    mover.move()
+    pygame.display.flip()
+    pygame.display.update()
 
 
-# get layers 
-# print(tmx_data.layers) # get all layers 
-# for layer in tmx_data.visible_layers: # get visible layers 
-# 	print(layer)
+def main():
+    pygame.init()
 
-# print(tmx_data.layernames) # get all layer names as dict
+    x = 1280
+    y = 720
+    screen_size = (x, y)
+    screen = pygame.display.set_mode(screen_size)
 
-# print(tmx_data.get_layer_by_name('Floor')) # get one layer by name
+    x2 = 4480
+    y2 = 4096
+    surface_size = (x2, y2)
+    surface = pygame.surface.Surface(surface_size)
 
-# for obj in tmx_data.objectgroups: # get object layers
-# 	print(obj)
+    tmx_data = load_pygame('../data/tmx/basic.tmx')
+    sprite_group = pygame.sprite.Group()
 
-# get tiles
-# layer = tmx_data.get_layer_by_name('Floor')
-# for x,y,surf in layer.tiles(): # get all the information
-# 	print(x * 128)
-# 	print(y * 128)
-# 	print(surf)
+    # cycle through all layers
+    for layer in tmx_data.visible_layers:
+        # if layer.name in ('Floor', 'Plants and rocks', 'Pipes')
+        if hasattr(layer, 'data'):
+            for x, y, surf in layer.tiles():
+                pos = (x * 128, y * 128)
+                Tile(pos=pos, surf=surf, groups=sprite_group)
 
-# print(layer.data)
+    # for obj in tmx_data.objects:
+    #     pos = obj.x, obj.y
+    #     if obj.type in ('Building', 'Vegetation'):
+    #         Tile(pos=pos, surf=obj.image, groups=sprite_group)
 
-# print(layer.name)
-# print(layer.id)
+    clock = pygame.time.Clock()
 
-# get objects
-# object_layer = tmx_data.get_layer_by_name('Objects')
-# for obj in object_layer:
-# 	# print(obj.x)
-# 	# print(obj.y)
-# 	# print(obj.image)
-# 	if obj.type == 'Shape':
-		# if obj.name == 'Marker':
-		# 	print(obj.x)
-		# 	print(obj.y)
-		# if obj.name == 'Rectangle':
-		# 	print(obj.x)
-		# 	print(obj.y)
-		# 	print(obj.width)
-		# 	print(obj.height)
-		# 	print(obj.as_points)
+    pos_x = 0
+    pos_y = 0
+    mover = tools.Mover(screen, surface, pos_x, pos_y)
 
-		# if obj.name == 'Ellipse':
-		# 	print(dir(obj))
+    update(screen, surface, sprite_group, mover)
+    quit_game = False
+    while not quit_game:
 
-		# if obj.name == 'Polygon':
-		# 	print(obj.as_points)
-		# 	print(obj.points)
+        quit_game = pygame.event.get(pygame.QUIT)
 
-# for obj in tmx_data.objects:
-# 	print(obj)
+        move_requested = mover.check_for_move_request()
+        if move_requested:
+            update(screen, surface, sprite_group, mover)
 
-while True:
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			pygame.quit()
-			sys.exit()
+        clock.tick(60)
 
-	screen.fill('black')
-	sprite_group.draw(screen)
-	
-	for obj in tmx_data.objects:
-		pos = obj.x,obj.y
-		if obj.type == 'Shape':
-			if obj.name == 'Marker':
-				pygame.draw.circle(screen,'red',(obj.x,obj.y),5)
-			if obj.name == 'Rectangle':
-				rect = pygame.Rect(obj.x,obj.y,obj.width,obj.height)
-				pygame.draw.rect(screen,'yellow',rect)
 
-			if obj.name == 'Ellipse':
-				rect = pygame.Rect(obj.x,obj.y,obj.width,obj.height)
-				pygame.draw.ellipse(screen,'blue',rect)
-
-			if obj.name == 'Polygon':
-				points = [(point.x,point.y) for point in obj.points]
-				pygame.draw.polygon(screen,'green',points)
-	
-	pygame.display.update()
+if __name__ == "__main__":
+    main()
