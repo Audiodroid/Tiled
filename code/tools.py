@@ -3,11 +3,14 @@ import pygame
 
 class Mover:
 
-    def __init__(self, screen, surface, pos_x, pos_y):
+    def __init__(self, screen, surface, screen_size, surface_size):
         self.screen = screen
         self.surface = surface
-        self.pos_x = pos_x
-        self.pos_y = pos_y
+
+        self.pos_x = 0
+        self.pos_y = 0
+        self.max_x = surface_size[0] - screen_size[0]
+        self.max_y = surface_size[1] - screen_size[1]
 
         self.key_is_down = False
         self.key = None
@@ -28,21 +31,22 @@ class Mover:
 
         if self.key_is_down:
 
-            if self.key == pygame.K_w:
-                self.pos_y = min(self.pos_y + 15, 0)
-
-            elif self.key == pygame.K_s:
-                self.pos_y = max(self.pos_y - 15, -4096)
-
-            elif self.key == pygame.K_a:
+            if self.key == pygame.K_a:
                 self.pos_x = min(self.pos_x + 15, 0)
 
             elif self.key == pygame.K_d:
-                self.pos_x = max(self.pos_x - 15, -4480)
+                self.pos_x = max(self.pos_x - 15, -self.max_x)
+
+            elif self.key == pygame.K_w:
+                self.pos_y = min(self.pos_y + 15, 0)
+
+            elif self.key == pygame.K_s:
+                self.pos_y = max(self.pos_y - 15, -self.max_y)
 
         pos = (self.pos_x, self.pos_y)
 
         self.screen.blit(self.surface, pos)
+
 
 class Scroller:
 

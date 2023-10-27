@@ -49,9 +49,7 @@ def main():
 
     clock = pygame.time.Clock()
 
-    pos_x = 0
-    pos_y = 0
-    mover = tools.Mover(screen, surface, pos_x, pos_y)
+    mover = tools.Mover(screen, surface, screen_size, surface_size)
 
     update(screen, surface, sprite_group, mover)
     quit_game = False
