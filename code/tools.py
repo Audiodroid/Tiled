@@ -3,14 +3,14 @@ import pygame
 
 class Mover:
 
-    def __init__(self, screen, surface, screen_size, surface_size):
+    def __init__(self, screen, surface):
         self.screen = screen
         self.surface = surface
 
         self.pos_x = 0
         self.pos_y = 0
-        self.max_x = surface_size[0] - screen_size[0]
-        self.max_y = surface_size[1] - screen_size[1]
+        self.max_x = surface.get_size()[0] - screen.get_size()[0]
+        self.max_y = surface.get_size()[1] - screen.get_size()[1]
 
         self.key_is_down = False
         self.key = None

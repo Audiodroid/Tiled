@@ -42,14 +42,30 @@ def main():
                 pos = (x * 128, y * 128)
                 Tile(pos=pos, surf=surf, groups=sprite_group)
 
-    # for obj in tmx_data.objects:
-    #     pos = obj.x, obj.y
-    #     if obj.type in ('Building', 'Vegetation'):
-    #         Tile(pos=pos, surf=obj.image, groups=sprite_group)
+    for obj in tmx_data.objects:
+        pos = obj.x, obj.y
+        if obj.type in ('Building', 'Vegetation'):
+            Tile(pos=pos, surf=obj.image, groups=sprite_group)
+
+    for obj in tmx_data.objects:
+        if obj.type == 'Shape':
+            if obj.name == 'Marker':
+                pygame.draw.circle(screen, 'red', (obj.x, obj.y), 5)
+            if obj.name == 'Rectangle':
+                rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+                pygame.draw.rect(screen, 'yellow', rect)
+
+            if obj.name == 'Ellipse':
+                rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+                pygame.draw.ellipse(screen, 'blue', rect)
+
+            if obj.name == 'Polygon':
+                points = [(point.x, point.y) for point in obj.points]
+                pygame.draw.polygon(screen, 'green', points)
 
     clock = pygame.time.Clock()
 
-    mover = tools.Mover(screen, surface, screen_size, surface_size)
+    mover = tools.Mover(screen, surface)
 
     update(screen, surface, sprite_group, mover)
     quit_game = False
