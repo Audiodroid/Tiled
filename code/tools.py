@@ -1,81 +1,70 @@
 import pygame
 
 
+def key_is_move_key(event):
+    return event.key == pygame.K_a or event.key == pygame.K_d or event.key == pygame.K_w or event.key == pygame.K_s
+
+
 class Mover:
 
     def __init__(self, screen, surface):
         self.screen = screen
         self.surface = surface
 
-        self.pos_x = 0
-        self.pos_y = 0
-        self.max_x = surface.get_size()[0] - screen.get_size()[0]
-        self.max_y = surface.get_size()[1] - screen.get_size()[1]
-
-        self.key_is_down = False
+        self.move_key_is_down = False
         self.key = None
 
     def check_for_move_request(self):
 
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                self.key_is_down = True
+            if event.type == pygame.KEYDOWN and key_is_move_key(event):
+                self.move_key_is_down = True
                 self.key = event.key
             elif event.type == pygame.KEYUP:
-                self.key_is_down = False
+                self.move_key_is_down = False
                 self.key = None
 
-        return self.key_is_down
+        return self.move_key_is_down
 
-    def new_pos(self):
+    def new_pos(self, pos):
+
+        max_x = self.surface.get_size()[0] - self.screen.get_size()[0]
+        max_y = self.surface.get_size()[1] - self.screen.get_size()[1]
 
         if self.key == pygame.K_a:
-            self.pos_x = min(self.pos_x + 15, 0)
+            pos[0] = min(pos[0] + 15, 0)
 
         elif self.key == pygame.K_d:
-            self.pos_x = max(self.pos_x - 15, -self.max_x)
+            pos[0] = max(pos[0] - 15, -max_x)
 
         elif self.key == pygame.K_w:
-            self.pos_y = min(self.pos_y + 15, 0)
+            pos[1] = min(pos[1] + 15, 0)
 
         elif self.key == pygame.K_s:
-            self.pos_y = max(self.pos_y - 15, -self.max_y)
+            pos[1] = max(pos[1] - 15, -max_y)
 
-        return self.pos_x, self.pos_y
+        return pos
 
-    def move(self):
-        """zoom=1 shows the full surface, 0.5 shows the top quarter!?"""
-        zoom = 0.5
+    def get_new_pos(self, pos):
 
-        if self.key_is_down:
-            pos = self.new_pos()
-        else:
-            pos = (self.pos_x, self.pos_y)
+        if not self.move_key_is_down:
+            return pos
 
-        wnd_w, wnd_h = self.screen.get_size()
-        zoom_size = (round(wnd_w / zoom), round(wnd_h / zoom))
-        self.surface = pygame.transform.scale(self.surface, zoom_size)
-        self.screen.blit(self.surface, pos)
+        return self.new_pos(pos)
 
 
 class Zoomer:
 
     """ https://stackoverflow.com/questions/56407891/pygame-transform-scale-does-not-work-on-the-game-surface """
 
-    def __init__(self, screen, surface):
+    def __init__(self, screen):
         self.screen = screen
-        self.surface = surface
-        self.pos_x = 0
-        self.pos_y = 0
+        self.zoom = 0.5
 
-    def zoom(self):
+    def get_zoom_size(self):
         """zoom=1 shows the full surface, 0.5 shows the top quarter!?"""
-        zoom = 0.5
-
         wnd_w, wnd_h = self.screen.get_size()
-        zoom_size = (round(wnd_w / zoom), round(wnd_h / zoom))
-        self.surface = pygame.transform.scale(self.surface, zoom_size)
-        self.screen.blit(self.surface, (self.pos_x, self.pos_y))
+        return round(wnd_w / self.zoom), round(wnd_h / self.zoom)
 
 
 class Scroller:

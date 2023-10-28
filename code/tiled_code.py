@@ -10,11 +10,16 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
 
-def update(screen, surface, sprite_group, mover=None, zoomer=None):
+def update(screen, surface, pos, sprite_group, mover=None, zoomer=None):
+
     sprite_group.draw(surface)
     screen.fill('black')
-    mover.move()
-    # zoomer.zoom()
+
+    pos = mover.get_new_pos(pos)
+    zoom_size = zoomer.get_zoom_size()
+    surface = pygame.transform.scale(surface, zoom_size)
+    screen.blit(surface, pos)
+
     pygame.display.flip()
     pygame.display.update()
 
@@ -67,9 +72,9 @@ def main():
     clock = pygame.time.Clock()
 
     mover = tools.Mover(screen, surface)
-    # zoomer = tools.Zoomer(screen, surface)
-
-    update(screen, surface, sprite_group, mover=mover, zoomer=None)
+    zoomer = tools.Zoomer(screen)
+    pos = [0, 0]
+    update(screen, surface, pos, sprite_group, mover=mover, zoomer=zoomer)
     quit_game = False
     while not quit_game:
 
@@ -77,7 +82,7 @@ def main():
 
         move_requested = mover.check_for_move_request()
         if move_requested:
-            update(screen, surface, sprite_group, mover=mover, zoomer=None)
+            update(screen, surface, pos, sprite_group, mover=mover, zoomer=zoomer)
 
         clock.tick(60)
 
