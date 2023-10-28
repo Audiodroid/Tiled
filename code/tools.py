@@ -27,24 +27,34 @@ class Mover:
 
         return self.key_is_down
 
+    def new_pos(self):
+
+        if self.key == pygame.K_a:
+            self.pos_x = min(self.pos_x + 15, 0)
+
+        elif self.key == pygame.K_d:
+            self.pos_x = max(self.pos_x - 15, -self.max_x)
+
+        elif self.key == pygame.K_w:
+            self.pos_y = min(self.pos_y + 15, 0)
+
+        elif self.key == pygame.K_s:
+            self.pos_y = max(self.pos_y - 15, -self.max_y)
+
+        return self.pos_x, self.pos_y
+
     def move(self):
+        """zoom=1 shows the full surface, 0.5 shows the top quarter!?"""
+        zoom = 0.5
 
         if self.key_is_down:
+            pos = self.new_pos()
+        else:
+            pos = (self.pos_x, self.pos_y)
 
-            if self.key == pygame.K_a:
-                self.pos_x = min(self.pos_x + 15, 0)
-
-            elif self.key == pygame.K_d:
-                self.pos_x = max(self.pos_x - 15, -self.max_x)
-
-            elif self.key == pygame.K_w:
-                self.pos_y = min(self.pos_y + 15, 0)
-
-            elif self.key == pygame.K_s:
-                self.pos_y = max(self.pos_y - 15, -self.max_y)
-
-        pos = (self.pos_x, self.pos_y)
-
+        wnd_w, wnd_h = self.screen.get_size()
+        zoom_size = (round(wnd_w / zoom), round(wnd_h / zoom))
+        self.surface = pygame.transform.scale(self.surface, zoom_size)
         self.screen.blit(self.surface, pos)
 
 
@@ -59,17 +69,13 @@ class Zoomer:
         self.pos_y = 0
 
     def zoom(self):
-        zoom = 2
+        """zoom=1 shows the full surface, 0.5 shows the top quarter!?"""
+        zoom = 0.5
 
         wnd_w, wnd_h = self.screen.get_size()
         zoom_size = (round(wnd_w / zoom), round(wnd_h / zoom))
-        zoom_area = pygame.Rect(0, 0, *zoom_size)
-        zoom_area.center = (self.pos_x, self.pos_y)
-        # self.surface.resize(zoom_area)
-        # zoom_surf = pygame.Surface(zoom_area.size)
-        self.surface.blit(self.screen, (0, 0), zoom_area)
-        self.surface = pygame.transform.scale(self.surface, (wnd_w, wnd_h))
-        self.screen.blit(self.surface, (0, 0))
+        self.surface = pygame.transform.scale(self.surface, zoom_size)
+        self.screen.blit(self.surface, (self.pos_x, self.pos_y))
 
 
 class Scroller:
