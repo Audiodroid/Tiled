@@ -48,6 +48,30 @@ class Mover:
         self.screen.blit(self.surface, pos)
 
 
+class Zoomer:
+
+    """ https://stackoverflow.com/questions/56407891/pygame-transform-scale-does-not-work-on-the-game-surface """
+
+    def __init__(self, screen, surface):
+        self.screen = screen
+        self.surface = surface
+        self.pos_x = 0
+        self.pos_y = 0
+
+    def zoom(self):
+        zoom = 2
+
+        wnd_w, wnd_h = self.screen.get_size()
+        zoom_size = (round(wnd_w / zoom), round(wnd_h / zoom))
+        zoom_area = pygame.Rect(0, 0, *zoom_size)
+        zoom_area.center = (self.pos_x, self.pos_y)
+        # self.surface.resize(zoom_area)
+        # zoom_surf = pygame.Surface(zoom_area.size)
+        self.surface.blit(self.screen, (0, 0), zoom_area)
+        self.surface = pygame.transform.scale(self.surface, (wnd_w, wnd_h))
+        self.screen.blit(self.surface, (0, 0))
+
+
 class Scroller:
 
     def __init__(self, display, surface, scroll_y):
