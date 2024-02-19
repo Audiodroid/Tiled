@@ -1,3 +1,9 @@
+#
+# https://www.youtube.com/watch?v=N6xqCwblyiw
+# https://www.youtube.com/watch?v=T4IX36sP_0c
+#
+# https://cupnooble.itch.io/sprout-lands-asset-pack
+
 import pygame
 from pytmx.util_pygame import load_pygame
 import tools
